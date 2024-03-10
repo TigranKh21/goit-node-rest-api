@@ -4,11 +4,13 @@ import {
   addContact,
   removeContact,
   updateContactsById,
+  updateStatusContactById,
 } from "../services/contactsServices.js";
 import HttpError from "../helpers/HttpError.js";
 import {
   createContactSchema,
   updateContactSchema,
+  updateStatusContactSchema,
 } from "../schemas/contactsSchemas.js";
 
 export const getAllContacts = async (req, res) => {
@@ -69,6 +71,23 @@ export const updateContact = async (req, res, next) => {
     }
     const { id } = req.params;
     const result = await updateContactsById(id, req.body);
+    if (!result) {
+      throw HttpError(404, `No contact with id ${id} is found`);
+    }
+    res.json(result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateStatusContact = async (req, res, next) => {
+  try {
+    const { error } = updateStatusContactSchema.validate(req.body);
+    if (error) {
+      throw HttpError(400, error.message);
+    }
+    const { id } = req.params;
+    const result = await updateStatusContactById(id, req.body);
     if (!result) {
       throw HttpError(404, `No contact with id ${id} is found`);
     }
