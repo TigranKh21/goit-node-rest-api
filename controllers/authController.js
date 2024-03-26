@@ -23,23 +23,53 @@ const register = async (req, res) => {
 const login = async (req, res) => {
   const { email, password } = req.body;
   const user = await authServices.findUser({ email });
-  console.log(user);
   if (!user) {
     throw HttpError(401, "Email or password is wrong");
   }
-  const comparePassword = authServices.validatePassord(user.password, password);
+  const comparePassword = await authServices.validatePassword(
+    password,
+    user.password
+  );
   if (!comparePassword) {
-    console.log("and now is here");
     throw HttpError(401, "Email or password is wrong");
   }
 
   const { _id: id } = user;
   const payload = { id };
   const token = jwt.sign(payload, JWT_SECRET, { expiresIn: "23h" });
+  await authServices.updateUser({ _id: id }, { token });
   res.json({ token });
+};
+
+const getCurrent = async (req, res) => {
+  const { email, subscription } = req.user;
+  res.json({
+    email,
+    subscription,
+  });
+};
+
+const logout = async (req, res) => {
+  const { _id } = req.user;
+  await authServices.updateUser({ _id }, { token: "" });
+  res.json({
+    message: "No Content",
+  });
+};
+
+const updateSubscript = async (req, res) => {
+  const { _id } = req.user;
+  const { subscription } = req.body;
+  await authServices.updateUser({ _id }, { subscription });
+  res.json({
+    message: "Subscription updated successfully",
+  });
 };
 
 export default {
   register: ctrlWrapper(register),
   login: ctrlWrapper(login),
+  getCurrent: ctrlWrapper(getCurrent),
+  logout: ctrlWrapper(logout),
+  updateSubscript: ctrlWrapper(updateSubscript),
 };
