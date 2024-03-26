@@ -15,9 +15,27 @@ import {
 
 export const getAllContacts = async (req, res) => {
   try {
-    const result = await listContacts();
+    const { _id: owner } = req.user;
+    let { page = 1, limit = 10, favorite } = req.query;
+    const skip = (page - 1) * limit;
+
+    let favoriteFilter;
+    if (favorite === "true") {
+      favoriteFilter = true;
+    } else if (favorite === "false") {
+      favoriteFilter = false;
+    }
+
+    const filter = { owner };
+    if (favoriteFilter !== undefined) {
+      filter.favorite = favoriteFilter;
+    }
+
+    const result = await listContacts(filter, { skip, limit });
+
     res.json(result);
   } catch (error) {
+    console.error(error);
     res.status(500).json({
       message: "Server error",
     });
@@ -56,7 +74,8 @@ export const createContact = async (req, res, next) => {
     if (error) {
       throw HttpError(400, error.message);
     }
-    const result = await addContact(req.body);
+    const { _id: owner } = req.user;
+    const result = await addContact({ ...req.body, owner });
     res.status(201).json(result);
   } catch (error) {
     next(error);

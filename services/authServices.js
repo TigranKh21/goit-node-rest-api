@@ -10,10 +10,10 @@ export const register = async (data) => {
   return User.create({ ...data, password: hashedPassword });
 };
 
-export const login = async (data) => {
-  const hashedPassword = await bcrypt.hash(data.password, 10);
+export const validatePassword = async (password, hashedPassword) => {
+  return bcrypt.compare(password, hashedPassword);
 };
 
-export const validatePassord = (password, hashedPassword) => {
-  return bcrypt.compare(password, hashedPassword);
+export const updateUser = async (filter, data) => {
+  return User.findOneAndUpdate(filter, data);
 };
