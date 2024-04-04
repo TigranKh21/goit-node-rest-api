@@ -30,6 +30,7 @@ export const getAllContacts = async (req, res) => {
     if (favoriteFilter !== undefined) {
       filter.favorite = favoriteFilter;
     }
+    console.log(filter);
 
     const result = await listContacts(filter, { skip, limit });
 

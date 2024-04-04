@@ -5,6 +5,7 @@ import {
   loginUserSchema,
   registerUserSchema,
   updateUserSchema,
+  emailUserSchema,
 } from "../schemas/userSchemas.js";
 import authenticate from "../middlewares/authenticate.js";
 import upload from "../middlewares/upload.js";
@@ -15,6 +16,12 @@ authRouter.post(
   "/register",
   validateBody(registerUserSchema),
   authController.register
+);
+authRouter.get("/verify/:verificationToken", authController.verify);
+authRouter.post(
+  "/verify",
+  validateBody(emailUserSchema),
+  authController.resendVerify
 );
 authRouter.post("/login", validateBody(loginUserSchema), authController.login);
 authRouter.get("/current", authenticate, authController.getCurrent);
