@@ -10,6 +10,7 @@ import authRouter from "./routes/authRouter.js";
 dotenv.config();
 
 const app = express();
+const { PORT } = process.env;
 
 app.use(morgan("tiny"));
 app.use(cors());
@@ -31,7 +32,7 @@ app.use((err, req, res, next) => {
 mongoose
   .connect(process.env.DB_HOST)
   .then(() => {
-    app.listen(3000, () => {
+    app.listen(PORT, () => {
       console.log("Database connection is successful");
     });
   })
