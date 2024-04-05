@@ -61,9 +61,6 @@ const verify = async (req, res) => {
 
 const resendVerify = async (req, res) => {
   const { email } = req.body;
-  if (!email) {
-    throw HttpError(400, "missing required field email");
-  }
   const user = await authServices.findUser({ email });
   if (!user) {
     throw HttpError(400, "Email not found");
