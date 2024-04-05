@@ -19,5 +19,8 @@ export const updateUserSchema = Joi.object({
 });
 
 export const emailUserSchema = Joi.object({
-  email: Joi.string().pattern(email_mask).required(),
+  email: Joi.string().pattern(email_mask).required().messages({
+    "string.empty": "missing required field email",
+    "any.required": "missing required field email",
+  }),
 });
